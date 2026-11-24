@@ -6,8 +6,8 @@ storage.
 
 ## 1. Live URLs
 
-- Frontend: <frontend URL after deployment>
-- Backend: <backend URL after deployment> (`GET /health` shows key pool + cache state)
+- Frontend: https://llm-failover-chatbot-web.onrender.com
+- Backend: https://llm-failover-chatbot-api.onrender.com (`GET /health` shows key pool + cache state)
 
 ## 2. Run locally
 
