@@ -29,7 +29,7 @@ def _csv(name: str, default: str = "") -> list[str]:
 API_KEYS = _csv("LLM_API_KEYS")
 KEY_IDS = [f"key_{i + 1}" for i in range(len(API_KEYS))]
 MODEL = os.environ.get("LLM_MODEL", "gemini/gemini-3.1-flash-lite")
-FALLBACK_MODELS = _csv("LLM_FALLBACK_MODELS", "gemini/gemini-3.8-flash")
+FALLBACK_MODELS = _csv("LLM_FALLBACK_MODELS", "gemini/gemini-3.1-flash-lite,gemini/gemini-3.8-flash,gemini/gemini-3.6-flash")
 MODEL_CHAIN = [MODEL] + [m for m in FALLBACK_MODELS if m != MODEL]
 DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:////data/app.db")
 ALLOWED_ORIGINS = _csv("ALLOWED_ORIGINS", "http://localhost:3000")
