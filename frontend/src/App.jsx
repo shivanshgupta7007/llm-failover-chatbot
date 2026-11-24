@@ -106,6 +106,8 @@ export default function App() {
                 <span>
                   out <span data-testid="meta-output-tokens">{md.output_tokens}</span> tok
                 </span>
+                <span data-testid="meta-key">{md.key_id ?? 'no key (cache)'}</span>
+                <span data-testid="meta-fallback">fallbacks {md.fallback_attempts ?? 0}</span>
               </div>
             </div>
           )
