@@ -37,6 +37,8 @@ FAILURE_SIMULATION = os.environ.get("ENABLE_FAILURE_SIMULATION", "false").lower(
 CACHE_DIR = os.environ.get("LITELLM_CACHE_DIR", "/data/litellm-cache")
 LLM_TIMEOUT = int(os.environ.get("LLM_TIMEOUT", "45"))
 LLM_NUM_RETRIES = int(os.environ.get("LLM_NUM_RETRIES", "2"))
+LLM_CHAIN_PASSES = int(os.environ.get("LLM_CHAIN_PASSES", "3"))
+LLM_RETRY_DELAY = float(os.environ.get("LLM_RETRY_DELAY", "3"))
 DEFAULT_SYSTEM_PROMPT = os.environ.get(
     "DEFAULT_SYSTEM_PROMPT", "You are a concise, helpful assistant."
 )
@@ -227,8 +229,15 @@ def llm_chat(messages: list[dict], simulation: Optional[dict[str, int]]) -> dict
     attempts = 0
     errors: list[str] = []
     use_cache = CACHE_ACTIVE and simulation is None
+    # Demand spikes on free tiers last seconds to minutes; ride them out with a
+    # few passes over the whole chain. Simulated failures get a single pass so
+    # the failover contract answers immediately.
+    passes = 1 if simulation is not None else LLM_CHAIN_PASSES
 
-    for model in MODEL_CHAIN:
+    for pass_no in range(passes):
+      if pass_no:
+        time.sleep(LLM_RETRY_DELAY)
+      for model in MODEL_CHAIN:
         ck = _cache_key(model, messages)
         for kid, api_key in zip(KEY_IDS, API_KEYS):
             sim_status = simulation.get(kid, simulation.get("*")) if simulation else None
